@@ -17,7 +17,7 @@ export default function Home({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../assets/logo.png')} style={styles.logo} />
+      <Image source={require('../assets/Logoestrellanegra.png')} style={styles.logo} />
       <Text style={styles.title}>Bienvenido a la aplicación</Text>
       <TouchableOpacity style={styles.button} onPress={handleLogOut}>
         <Text style={styles.buttonText}>Cerrar sesión</Text>
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#F7F2F2",
   },
   logo: {
     width: 100,
@@ -43,9 +43,10 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+    color: "#D0294B",
   },
   button: {
-    backgroundColor: '#922b21',
+    backgroundColor: "#D0294B",
     paddingVertical: 10,
     paddingHorizontal: 40,
     borderRadius: 5,
