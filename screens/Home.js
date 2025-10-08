@@ -36,7 +36,7 @@ export default function Home({ navigation }) {
     return () => unsubscribe();
   }, []);
 
-  // 🔄 FUNCIÓN ACTUALIZADA: Cierra sesión y va directamente al LOGIN
+  // Cierra sesión y va directamente al LOGIN
   const handleLogOut = async () => {
     try {
       await signOut(auth);
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#EDEDED",
+    backgroundColor: "#FFFFFF",
     borderRadius: 10,
     padding: 15,
     marginBottom: 10,

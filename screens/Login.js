@@ -9,8 +9,9 @@ import { auth } from '../src/config/firebaseConfig';
 import { useNavigation } from '@react-navigation/native';
 import CustomAlert from "../components/CustomAlert"; 
 
-
+//Imagen importada al fondo 
 const backgroundImage = require('../assets/tijeras.png');
+
 
 export default function Login() {
   const navigation = useNavigation();
@@ -19,14 +20,15 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  // 🔔 Estados para CustomAlert
+  // Estados para CustomAlert
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertTitle, setAlertTitle] = useState('');
   const [alertMessage, setAlertMessage] = useState('');
   
-  // 🔑 MODIFICACIÓN 1: Estado para rastrear el éxito del login.
+  // Estado para rastrear el éxito del login.
   const [isLoginSuccess, setIsLoginSuccess] = useState(false); 
-
+ 
+  // ... (Variables de validación de contraseña)
   const hasUpperCase = /[A-Z]/.test(password);
   const hasNumber = /\d/.test(password);
   const hasSpecial = /[^A-Za-z\d]/.test(password);
@@ -38,45 +40,31 @@ export default function Login() {
     setAlertVisible(true);
   };
 
-  // --- MODIFICACIÓN 2: Lógica de Login ---
+  // --- Lógica de Login ---
   const handleLogin = async () => {
     // Restablecer el estado de éxito antes de cada intento
     setIsLoginSuccess(false); 
 
     if (!email || !password) {
-      showCustomAlert('Atención ⚠️', 'Por favor ingrese ambos campos.');
+      showCustomAlert('⚠️ Atención', 'Por favor complete ambos campos.');
       return;
     }
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
       
-      // ✅ ÉXITO: Marcamos el estado a true
+      // ÉXITO: Marcamos el estado a true
       setIsLoginSuccess(true); 
       
       // Mostramos la alerta de bienvenida
-      showCustomAlert('Bienvenido 🎉', `Te logueaste como ${auth.currentUser.displayName || 'Usuario'}`);
+      showCustomAlert('🎉 Bienvenid@', `Iniciaste sesión como ${auth.currentUser.displayName || 'Usuario'}`);
       
+      //Borrar lo siguiente
     } catch (error) {
-      let errorMessage = "Hubo un problema al iniciar sesión.";
-      switch (error.code) {
-        case 'auth/invalid-email':
-          errorMessage = "El formato del correo electrónico no es válido.";
-          break;
-        case 'auth/wrong-password':
-          errorMessage = "La contraseña es incorrecta.";
-          break;
-        case 'auth/user-not-found':
-          errorMessage = "No se encontró un usuario con este correo.";
-          break;
-        case 'auth/network-request-failed':
-          errorMessage = "Error de conexión, por favor intenta más tarde.";
-          break;
-      }
-      // ❌ FALLO: isLoginSuccess sigue siendo false.
-      showCustomAlert('Error', errorMessage);
+      showCustomAlert(" ⚠️ Atención", "Credenciales no válidas.");
     }
-  };
+  }
+    
   // ----------------------------------------
 
   return (
@@ -98,7 +86,7 @@ export default function Login() {
               </View>
             </View>
 
-            {/* FORM */}
+            {/* FORM CORREO Y CONTRAEÑA*/}
             <View style={styles.formBlock}>
               <Text style={styles.label}>Correo</Text>
               <View style={styles.inputContainer}>
@@ -123,6 +111,7 @@ export default function Login() {
                   onChangeText={setPassword}
                   secureTextEntry={!showPassword}
                 />
+                {/* TouchableOpacity: Recude la opacidad al ser tocadao */}
                 <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
                   <FontAwesome name={showPassword ? "eye-slash" : "eye"} size={20} color="#ccc" />
                 </TouchableOpacity>
@@ -136,7 +125,7 @@ export default function Login() {
             {/* LINK A REGISTRO */}
             <TouchableOpacity style={styles.loginTextContainer} onPress={() => navigation.navigate('SignUp')}>
               <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                <Text style={styles.noCuentaText}>¿No tienes cuenta aún?</Text>
+                <Text style={styles.noCuentaText}>¿No tenés cuenta aún?</Text>
                 <Text style={styles.signUpText}> Regístrate</Text>
               </View>
             </TouchableOpacity>
@@ -145,19 +134,19 @@ export default function Login() {
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
       
-      {/* 🔑 MODIFICACIÓN 3: Lógica de cierre de la alerta */}
+      {/*Lógica de cierre de la alerta */}
       <CustomAlert
         visible={alertVisible}
         title={alertTitle}
         message={alertMessage}
         onClose={() => {
-            setAlertVisible(false); // 1. Cierra la alerta
+            setAlertVisible(false); // Cierra la alerta
             
-            // 2. Si el login fue exitoso, forzamos la navegación.
+            // Si el login fue exitoso, forzamos la navegación.
             if (isLoginSuccess) {
                 // Usamos un pequeño retardo para asegurar que la alerta se haya cerrado visualmente.
                 setTimeout(() => {
-                    navigation.navigate('Home'); // ¡Línea clave para la redirección!
+                    navigation.navigate('Home'); 
                 }, 200); 
                 
                 setIsLoginSuccess(false); 
@@ -169,7 +158,6 @@ export default function Login() {
   );
 }
 
-// ... (Tu código de estilos permanece igual)
 const styles = StyleSheet.create({
   background: { flex: 1, resizeMode: 'cover', padding: 20 },
   scrollContainer: { flexGrow: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 20 },
