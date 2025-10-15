@@ -126,7 +126,6 @@ export default function Home({ navigation }) {
           </TouchableOpacity>
         </View>
       </View>
-     <button onClick={handleLogout}>Cerrar sesión</button>
 
       {/* ALERTA SIMPLE */}
       <CustomAlert
