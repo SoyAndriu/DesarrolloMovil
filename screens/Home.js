@@ -3,7 +3,7 @@ import {
   View, Text, TouchableOpacity, StyleSheet, 
   ImageBackground, ScrollView, Image 
 } from 'react-native';
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../src/config/firebaseConfig';
 import CustomAlert from "../components/CustomAlert";
@@ -12,10 +12,9 @@ import ConfirmAlert from "../components/ConfirmAlert";
 const backgroundImage = require('../assets/herramientas.jpg');
 
 export default function Home({ navigation }) {
-  const [activeTab, setActiveTab] = useState('Perfil');
+  const [activeTab, setActiveTab] = useState('Inicio');
   const [userName, setUserName] = useState('Usuario');
 
-  // ALERTAS
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertData, setAlertData] = useState({ title: "", message: "", type: "info" });
 
@@ -24,10 +23,8 @@ export default function Home({ navigation }) {
     setAlertVisible(true);
   };
 
-  // CONFIRMACIÓN DE LOGOUT
   const [confirmVisible, setConfirmVisible] = useState(false);
 
-  // Mantener el nombre del usuario actualizado
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) setUserName(user.displayName || 'Usuario');
@@ -36,22 +33,15 @@ export default function Home({ navigation }) {
     return () => unsubscribe();
   }, []);
 
-  // Cierra sesión y va directamente al LOGIN
   const handleLogOut = async () => {
     try {
       await signOut(auth);
-      
-      // Navega inmediatamente a la pantalla LOGIN.
-  
       navigation.replace("Login"); 
-      
     } catch (error) {
-      // Si hay un error, SÍ mostramos la alerta de error.
-      showAlert("Error", "Hubo un problema al cerrar sesión.", "error");
+      showAlert("⚠️ Atención", "Hubo un problema al cerrar sesión.", "error");
     }
   };
 
-  // Perfil ahora navega directo a PerfilScreen
   const handleProfile = () => {
     navigation.navigate("Perfil");
   };
@@ -60,8 +50,8 @@ export default function Home({ navigation }) {
     { title: 'Clientes', subtitle: 'Nombre, Apellido, Dni, Teléfono', icon: require('../assets/clientes.png') },
     { title: 'Proveedores', subtitle: 'Nombre, Cuit/Cuil, Dirección', icon: require('../assets/proveedores.png') },
     { title: 'Compras', subtitle: 'Fecha, Monto', icon: require('../assets/compras.png') },
-    { title: 'Ventas', subtitle: 'Fecha, Monto, Estado', icon: require('../assets/ventas.png') },
-    { title: 'Productos', subtitle: 'Nombre, Precio, Stock', icon: require('../assets/productos.jpg'), screen: 'Productos' },
+    { title: 'Ventas', subtitle: 'Fecha, Monto, Estado', icon: require('../assets/ventas1.png') },
+    { title: 'Productos', subtitle: 'Nombre, Precio, Stock', icon: require('../assets/productos1.png'), screen: 'Productos' },
     { title: 'Caja', subtitle: 'Fecha, Hora, Monto', icon: require('../assets/caja.png') },
   ];
 
@@ -69,21 +59,17 @@ export default function Home({ navigation }) {
     <ImageBackground source={backgroundImage} style={styles.background} imageStyle={{ opacity: 0.3 }}>
       <View style={styles.container}>
         
-        {/* HEADER */}
-        <View style={styles.header}>
-          {navigation.canGoBack() ? (
-            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-              <Ionicons name="arrow-back" size={28} color="#D02985" />
-            </TouchableOpacity>
-          ) : (
-            <View style={{ width: 28 }} />
-          )}
-          <View style={{ flex: 1 }} />
-        </View>
+        {/* BOTÓN SALIR ARRIBA A LA DERECHA */}
+        <TouchableOpacity 
+          style={styles.logoutButton}
+          onPress={() => { setActiveTab('Cerrar sesión'); setConfirmVisible(true); }}
+        >
+          <Text style={styles.logoutText}>Salir</Text>
+          <FontAwesome name="sign-out" size={24} color="#D02985" />
+        </TouchableOpacity>
 
         {/* LOGO Y TEXTO DE MARCA */}
         <View style={styles.brandContainer}>
-          <View style={{ flex: 1 }} />
           <View style={styles.logoContainer}>
             <Image source={require('../assets/Logoestrellanegra.png')} style={styles.logo} />
             <View style={styles.textContainer}>
@@ -119,22 +105,24 @@ export default function Home({ navigation }) {
           ))}
         </ScrollView>
 
-        {/* BOTTOM TAB */}
+        {/* BOTTOM TAB MODIFICADA */}
         <View style={styles.bottomBar}>
+          {/* INICIO */}
+          <TouchableOpacity 
+            style={styles.tabButton} 
+            onPress={() => { setActiveTab('Inicio'); navigation.navigate('Home'); }}
+          >
+            <FontAwesome name="home" size={24} color={activeTab === 'Inicio' ? "#D02985" : "#555"} />
+            <Text style={[styles.tabText, { color: activeTab === 'Inicio' ? "#D02985" : "#555" }]}>Inicio</Text>
+          </TouchableOpacity>
+
+          {/* PERFIL */}
           <TouchableOpacity 
             style={styles.tabButton} 
             onPress={() => { setActiveTab('Perfil'); handleProfile(); }}
           >
             <FontAwesome name="user" size={24} color={activeTab === 'Perfil' ? "#D02985" : "#555"} />
             <Text style={[styles.tabText, { color: activeTab === 'Perfil' ? "#D02985" : "#555" }]}>Perfil</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.tabButton} 
-            onPress={() => { setActiveTab('Cerrar sesión'); setConfirmVisible(true); }}
-          >
-            <FontAwesome name="sign-out" size={24} color={activeTab === 'Cerrar sesión' ? "#D02985" : "#555"} />
-            <Text style={[styles.tabText, { color: activeTab === 'Cerrar sesión' ? "#D02985" : "#555" }]}>Salir</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -152,13 +140,12 @@ export default function Home({ navigation }) {
       <ConfirmAlert
         visible={confirmVisible}
         title="Cerrar sesión"
-        message="¿Estás seguro que quieres cerrar tu sesión?"
+        message="¿Estás seguro que deseas cerrar sesión?"
         cancelText="Cancelar"
         confirmText="Salir"
         cancelColor="#999"
         confirmColor="#D02985"
         onCancel={() => setConfirmVisible(false)}
-        // Al presionar 'Salir' (confirmText): 1. Cierra la confirmación. 2. Cierra sesión y redirige.
         onConfirm={() => { setConfirmVisible(false); handleLogOut(); }}
       />
     </ImageBackground>
@@ -176,36 +163,46 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingHorizontal: 20
   },
-  header: {
+  // Botón salir
+  logoutButton: {
+    position: 'absolute',
+    top: 95,
+    right: 20, 
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-    height: 50
+    zIndex: 10
   },
-  backButton: {
-    width: 28
+  logoutText: {
+    marginRight: 5,
+    color: '#D02985',
+    fontWeight: 'bold',
+    fontSize: 14
   },
+  //Logo + texto 
   brandContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 15
+    justifyContent: 'flex-start',
+    marginTop: 40,
+    marginBottom: 15,
+    paddingHorizontal: 5,
   },
   logoContainer: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'flex-start' // 🔹 logo al borde
   },
   logo: {
     width: 50,
     height: 50,
     resizeMode: 'contain',
-    marginRight: 5
+    marginRight: 10,
   },
   textContainer: {
-    alignItems: 'flex-start'
+    alignItems: 'column'
   },
   brand: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#D02985'
   },
@@ -234,7 +231,7 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#EDEDED",
     borderRadius: 10,
     padding: 15,
     marginBottom: 10,
@@ -256,13 +253,14 @@ const styles = StyleSheet.create({
   },
   bottomBar: {
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "space-between",
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
     backgroundColor: "#fff",
     paddingVertical: 10,
+    paddingHorizontal: 80,
     borderTopWidth: 1,
     borderTopColor: "#ccc"
   },
